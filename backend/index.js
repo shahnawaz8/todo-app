@@ -8,10 +8,11 @@ app.use(express.json())
 
 const connect = ()=>{
     return mongoose.connect(
-        "mongodb+srv://web14shop:web14@cluster0.bvdwy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
+        "mongodb://127.0.0.1:27017/");
+        // "mongodb+srv://web14shop:web14@cluster0.bvdwy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
 }
 const todoSchema = new mongoose.Schema({
-    Name:{type:String,required:true},
+    name:{type:String,required:true},
     status:{type:String,default:'false'},
     },
     {
@@ -35,10 +36,15 @@ app.get('/todos/:id',async(req,res)=>{
 })
 
 app.get('/alltodos',async(req,res)=>{
-    const page = req.query.search;
-    console.log('get todos',page);
-    // const todos = await Todo.findById(req.params.id).lean().exec();
-    return res.status(200).send("up");
+    let search = req.query.search || "";
+    let status = req.query.status || null;
+    let todos;
+    if(status){
+        todos = await Todo.find({"status":{$regex: status}}).lean().exec();
+        return res.status(200).send(todos);
+    }
+    todos = await Todo.find({"name":{$regex: `.*${search}*.`}}).lean().exec();
+    return res.status(200).send(todos);
 })
 
 app.patch('/todos/:id',async(req,res)=>{
