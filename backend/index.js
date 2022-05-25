@@ -35,7 +35,7 @@ app.get('/todos/:id',async(req,res)=>{
 })
 
 app.get('/alltodos',async(req,res)=>{
-    const page = +req.query.page;
+    const page = req.query.search;
     console.log('get todos',page);
     // const todos = await Todo.findById(req.params.id).lean().exec();
     return res.status(200).send("up");
